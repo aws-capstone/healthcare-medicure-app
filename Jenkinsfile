@@ -108,7 +108,8 @@ pipeline{
                 dir('terraform'){
                   input message: 'Approve Terraform Apply?', ok: 'Apply'
                   sh 'terraform apply terraform.plan'
-                  sh 'gcloud container clusters get-credentials $(terraform output -raw kubernetes_cluster_name) --region $(terraform output -raw region)'
+                  sh 'echo gcloud container clusters get-credentials $(terraform output -raw cluster_name) --location=$(terraform output -raw location)'
+                  sh 'gcloud container clusters get-credentials $(terraform output -raw cluster_name) --location=$(terraform output -raw location)'
                }
             }
         }
