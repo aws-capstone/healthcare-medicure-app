@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: medicure-app
-        image: nikitaks997797/capstone_project2:$BUILD_NUMBER
+        image: nikitaks997797/capstone_project2:BUILD_NUMBER
         ports:
         - containerPort: 8082
       imagePullSecrets:
