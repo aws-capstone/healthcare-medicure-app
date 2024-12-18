@@ -121,7 +121,7 @@ pipeline{
         stage('Deploy Application to Cluster'){
             steps{
                 dir('kubernetes'){
-                  sh 'kubectl create secret docker-registry docker_private --from-file=.dockerconfigjson=/var/lib/jenkins/.docker/config.json --type=kubernetes.io/dockerconfigjson'
+                  sh 'kubectl create secret docker-registry docker_private --from-file=.dockerconfigjson=/var/lib/jenkins/.docker/config.json'
                   sh 'kubectl apply -f .'
                 }
             }
