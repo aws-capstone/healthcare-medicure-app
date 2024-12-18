@@ -52,6 +52,7 @@ module "gcp-network" {
 resource "google_compute_firewall" "allow_nodeport" {
   name          = "allow-nodeport-traffic"
   network       = local.network_name  # Replace with your VPC name
+  project       = var.project_id
   direction     = "INGRESS"
   priority      = 1000        # Adjust priority if needed
   source_ranges = ["0.0.0.0/0"]  # Allow traffic from any source
