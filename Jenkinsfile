@@ -108,12 +108,53 @@ pipeline{
                 dir('terraform'){
                   input message: 'Approve Terraform Apply?', ok: 'Apply'
                   sh 'terraform apply terraform.plan'
-                  sh 'echo gcloud container clusters get-credentials $(terraform output -raw cluster_name) --location=$(terraform output -raw location)'
                   sh 'gcloud container clusters get-credentials $(terraform output -raw cluster_name) --location=$(terraform output -raw location)'
                }
             }
         }
         stage('Deploy Application to Cluster'){
+            steps{
+                dir('kubernetes'){
+                  sh 'kubectl create secret docker-registry dockerprivate --from-file=.dockerconfigjson=/var/lib/jenkins/.docker/config.json --dry-run=client -o yaml|kubectl apply -f -'
+                  sh """
+                    sed -i "s|BUILD_NUMBER|${BUILD_NUMBER}|g" medicure_deploy.yaml
+                    kubectl apply -f medicure_deploy.yaml
+                    """
+                  sh 'kubectl apply -f medicure_service.yaml'
+                }
+            }
+        }
+        stage('Terraform Init Prod') {
+            steps {
+                dir('terraform-prod'){
+                sh 'terraform init'
+            }}
+        }
+
+        stage('Terraform Validate Prod') {
+            steps {
+                dir('terraform-prod'){
+                sh 'terraform validate'
+            }}
+        }
+
+        stage('Terraform Plan Prod') {
+            steps {
+                dir('terraform-prod'){
+                  sh 'terraform plan -out=terraform.plan'
+               }
+            }
+        }
+        stage('Terraform Apply Prod') {
+            steps {
+                dir('terraform-prod'){
+                  input message: 'Approve Terraform Apply?', ok: 'Apply'
+                  sh 'terraform apply terraform.plan'
+                  sh 'gcloud container clusters get-credentials $(terraform output -raw cluster_name) --location=$(terraform output -raw location)'
+               }
+            }
+        }
+        stage('Deploy Application to Prod Cluster'){
             steps{
                 dir('kubernetes'){
                   sh 'kubectl create secret docker-registry dockerprivate --from-file=.dockerconfigjson=/var/lib/jenkins/.docker/config.json --dry-run=client -o yaml|kubectl apply -f -'
