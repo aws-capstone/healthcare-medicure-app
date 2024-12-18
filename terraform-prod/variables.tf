@@ -20,5 +20,5 @@ variable "project_id" {
 
 variable "region" {
   description = "The region the cluster in"
-  default     = "us-central1"
+  default     = "europe-west2"
 }
