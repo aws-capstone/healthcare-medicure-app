@@ -99,16 +99,30 @@ pipeline{
         stage('Terraform Plan') {
             steps {
                 dir('terraform'){
-                sh 'terraform plan -out=terraform.plan'
-            }}
+                  sh 'terraform plan -out=terraform.plan'
+               }
+            }
         }
-
         stage('Terraform Apply') {
             steps {
                 dir('terraform'){
-                input message: 'Approve Terraform Apply?', ok: 'Apply'
-                sh 'terraform apply terraform.plan'
-            }}
+                  input message: 'Approve Terraform Apply?', ok: 'Apply'
+                  sh 'terraform apply terraform.plan'
+               }
+            }
+        }
+        stage('Get Cluster Credential'){
+            steps{
+                sh 'gcloud container clusters get-credentials $(terraform output -raw kubernetes_cluster_name) --region $(terraform output -raw region)'
+            }
+        }
+        stage('Deploy Application to Cluster'){
+            steps{
+                dir('kubernetes'){
+                  kubectl create secret docker-registry docker-private --from-file=.dockerconfigjson=/var/lib/jenkins/.docker/config.json --type=kubernetes.io/dockerconfigjson
+                  kubectl apply -f .
+                }
+            }
         }
     }
 }
