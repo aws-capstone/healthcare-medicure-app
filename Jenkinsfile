@@ -45,7 +45,7 @@ pipeline{
         stage('Build Image')
         {
             steps{
-                sh 'docker build -t healthcare-medicure-app:$BUILD_NUMBER .'
+                sh 'docker build -t capstone_project2:$BUILD_NUMBER .'
             }
         }
 
@@ -57,8 +57,8 @@ pipeline{
                 {
                sh 'docker login -u  nikitaks997797 -p ${docker} '
                }
-                sh 'docker tag healthcare-medicure-app:$BUILD_NUMBER nikitaks997797/capstone_project/healthcare-medicure-app:$BUILD_NUMBER'
-                sh 'docker push nikitaks997797/capstone_project/healthcare-medicure-app:$BUILD_NUMBER'
+                sh 'docker tag capstone_project2:$BUILD_NUMBER nikitaks997797/capstone_project2:$BUILD_NUMBER'
+                sh 'docker push nikitaks997797/capstone_project2:$BUILD_NUMBER'
             }
         }                   
     }
