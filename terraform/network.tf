@@ -48,3 +48,21 @@ module "gcp-network" {
     ]
   }
 }
+
+resource "google_compute_firewall" "allow_nodeport" {
+  name          = "allow-nodeport-traffic"
+  network       = local.network_name  # Replace with your VPC name
+  direction     = "INGRESS"
+  priority      = 1000        # Adjust priority if needed
+  source_ranges = ["0.0.0.0/0"]  # Allow traffic from any source
+
+  allow {
+    protocol = "tcp"
+    ports    = ["30000-32767"]  # NodePort range for TCP
+  }
+
+  allow {
+    protocol = "udp"
+    ports    = ["30000-32767"]  # NodePort range for UDP
+  }
+}

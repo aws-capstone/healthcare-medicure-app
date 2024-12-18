@@ -113,15 +113,13 @@ pipeline{
                }
             }
         }
-        //stage('Get Cluster Credential'){
-        //    steps{
-        //        sh 'gcloud container clusters get-credentials $(terraform output -raw kubernetes_cluster_name) --region $(terraform output -raw region)'
-        //    }
-        //}
         stage('Deploy Application to Cluster'){
             steps{
                 dir('kubernetes'){
                   sh 'kubectl create secret docker-registry dockerprivate --from-file=.dockerconfigjson=/var/lib/jenkins/.docker/config.json --dry-run=client -o yaml|kubectl apply -f -'
+                  sh """
+                    sed -i 's|\\$BUILD_NUMBER|${BUILD_NUMBER}|g' medicure_deploy.yaml
+                    """
                   sh 'kubectl apply -f .'
                 }
             }
