@@ -118,9 +118,10 @@ pipeline{
                 dir('kubernetes'){
                   sh 'kubectl create secret docker-registry dockerprivate --from-file=.dockerconfigjson=/var/lib/jenkins/.docker/config.json --dry-run=client -o yaml|kubectl apply -f -'
                   sh """
-                    sed -i "s|\$BUILD_NUMBER|${BUILD_NUMBER}|g" medicure_deploy.yaml
+                    sed -i "s|'$BUILD_NUMBER'|${BUILD_NUMBER}|g" medicure_deploy.yaml
+                    kubectl apply -f medicure_deploy.yaml
                     """
-                  sh 'kubectl apply -f .'
+                  sh 'kubectl apply -f medicure_service.yaml'
                 }
             }
         }
