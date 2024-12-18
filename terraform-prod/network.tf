@@ -24,13 +24,13 @@ module "gcp-network" {
   subnets = [
     {
       subnet_name           = local.subnet_name
-      subnet_ip             = "10.0.0.0/17"
+      subnet_ip             = "10.1.0.0/16"
       subnet_region         = var.region
       subnet_private_access = true
     },
     {
       subnet_name   = local.master_auth_subnetwork
-      subnet_ip     = "10.60.0.0/17"
+      subnet_ip     = "10.4.0.0/16"
       subnet_region = var.region
     },
   ]
