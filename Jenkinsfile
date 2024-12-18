@@ -108,14 +108,15 @@ pipeline{
                 dir('terraform'){
                   input message: 'Approve Terraform Apply?', ok: 'Apply'
                   sh 'terraform apply terraform.plan'
+                  sh 'gcloud container clusters get-credentials $(terraform output -raw kubernetes_cluster_name) --region $(terraform output -raw region)'
                }
             }
         }
-        stage('Get Cluster Credential'){
-            steps{
-                sh 'gcloud container clusters get-credentials $(terraform output -raw kubernetes_cluster_name) --region $(terraform output -raw region)'
-            }
-        }
+        //stage('Get Cluster Credential'){
+        //    steps{
+        //        sh 'gcloud container clusters get-credentials $(terraform output -raw kubernetes_cluster_name) --region $(terraform output -raw region)'
+        //    }
+        //}
         stage('Deploy Application to Cluster'){
             steps{
                 dir('kubernetes'){
