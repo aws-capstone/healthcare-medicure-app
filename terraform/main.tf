@@ -20,19 +20,14 @@ resource "google_container_cluster" "primary" {
   name     = "${local.cluster_type}-cluster"
   location = var.region
   project  = var.project_id
-  network                         = module.gcp-network.network_name
-  subnetwork                      = local.subnet_names[index(module.gcp-network.subnets_names, local.subnet_name)]   
+  network                         = google_compute_network.custom-test.name
+  subnetwork                      = google_compute_subnetwork.network-with-private-secondary-ip-ranges.name   
   deletion_protection = false
 
   remove_default_node_pool = true
   initial_node_count       = 1
   node_config{
     disk_size_gb = 25
-    advanced_machine_features{
-      threads_per_core = 0
-      enable_nested_virtualization = null
-    } 
-
   }
 }
 
