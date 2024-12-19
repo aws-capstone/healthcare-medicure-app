@@ -14,7 +14,7 @@ resource "google_compute_network" "custom-test" {
 
 
 resource "google_compute_firewall" "allow_nodeport" {
-  name          = "allow-nodeport-traffic"
+  name          = "allow-nodeport-traffic-prod"
   network       = local.network_name  # Replace with your VPC name
   project       = var.project_id
   direction     = "INGRESS"
