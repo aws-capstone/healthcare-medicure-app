@@ -124,6 +124,17 @@ pipeline{
                 }
             }
         }
+        stage('Install Prometheus Grafana in Test Cluster'){
+            steps{
+                dir('helm'){
+                sh """
+                  helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+                  helm repo update
+                  helm upgrade --install kube-prometheus-stack prometheus-community/kube-prometheus-stack -f values.yaml
+                  """
+                }
+            }
+        }
         stage('Terraform Init Prod') {
             steps {
                 dir('terraform-prod'){
@@ -166,5 +177,16 @@ pipeline{
                 }
             }
         }
+        stage('Install Prometheus Grafana in Prod Cluster'){
+            steps{
+                dir('helm'){
+                sh """
+                  helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+                  helm repo update
+                  helm upgrade --install kube-prometheus-stack prometheus-community/kube-prometheus-stack -f values.yaml
+                  """
+                }
+            }
+        }        
     }
 }
