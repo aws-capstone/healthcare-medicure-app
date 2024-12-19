@@ -16,29 +16,42 @@ provider "kubernetes" {
   cluster_ca_certificate = base64decode(module.gke.ca_certificate)
 }
 
-module "gke" {
-  source  = "terraform-google-modules/kubernetes-engine/google//modules/beta-autopilot-public-cluster"
-  version = "~> 34.0"
-
-  project_id                      = var.project_id
-  name                            = "${local.cluster_type}-cluster"
-  regional                        = true
-  region                          = var.region
+resource "google_container_cluster" "primary" {
+  name     = "${local.cluster_type}-cluster"
+  location = var.region
+  project  = var.project_id
   network                         = module.gcp-network.network_name
-  subnetwork                      = local.subnet_names[index(module.gcp-network.subnets_names, local.subnet_name)]
-  ip_range_pods                   = local.pods_range_name
-  ip_range_services               = local.svc_range_name
-  release_channel                 = "RAPID"
-  enable_vertical_pod_autoscaling = true
-  network_tags                    = [local.cluster_type]
-  deletion_protection             = false
-  enable_l4_ilb_subsetting        = true
-  gcs_fuse_csi_driver             = true
-  stateful_ha                     = false
-  gke_backup_agent_config         = false
-  ray_operator_config = {
-    enabled            = true
-    logging_enabled    = true
-    monitoring_enabled = true
+  subnetwork                      = local.subnet_names[index(module.gcp-network.subnets_names, local.subnet_name)]   
+  deletion_protection = false
+
+  remove_default_node_pool = true
+  initial_node_count       = 1
+  node_config{
+    disk_size_gb = 25
+    advanced_machine_features{
+      threads_per_core = 0
+      enable_nested_virtualization = null
+    } 
+
+  }
+}
+
+resource "google_container_node_pool" "primary_preemptible_nodes" {
+  name       = "my-node-pool"
+  cluster    = google_container_cluster.primary.id
+  location = var.region
+  project  = var.project_id  
+  node_count = 2
+
+  node_config {
+    preemptible  = true
+    machine_type = "e2-medium"
+    disk_size_gb = 25
+
+    # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
+    #service_account = google_service_account.default.email
+    oauth_scopes = [
+      "https://www.googleapis.com/auth/cloud-platform"
+    ]
   }
 }

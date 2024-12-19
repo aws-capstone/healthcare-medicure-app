@@ -66,4 +66,5 @@ resource "google_compute_firewall" "allow_nodeport" {
     protocol = "udp"
     ports    = ["30000-32767"]  # NodePort range for UDP
   }
+  depends_on = [ module.gcp-network ]
 }
