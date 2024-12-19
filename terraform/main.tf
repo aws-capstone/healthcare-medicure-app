@@ -36,7 +36,7 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
   cluster    = google_container_cluster.primary.id
   location = var.region
   project  = var.project_id  
-  node_count = 2
+  node_count = 1
 
   node_config {
     preemptible  = true
