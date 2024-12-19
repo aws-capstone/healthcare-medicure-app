@@ -26,7 +26,7 @@ output "cluster_name" {
 }
 
 output "location" {
-  value = google_container_cluster.primary.locationa
+  value = google_container_cluster.primary.location
 }
 
 output "master_kubernetes_version" {
